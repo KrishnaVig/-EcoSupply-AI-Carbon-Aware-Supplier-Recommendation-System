@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sustainable Materials Optimizer</title>
+  <style>
+    :root {
+      --bg: #f6f4ed;
+      --panel: #fffdf6;
+      --ink: #1b1b1b;
+      --muted: #606053;
+      --accent: #0e7c66;
+      --accent-soft: #d7efe8;
+      --line: #d8d3c4;
+      --warn: #b25c2f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, rgba(14, 124, 102, 0.14), transparent 28%),
+        linear-gradient(135deg, #f2efe5, #f9f7f0 50%, #ece8dc);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 0.95;
+      max-width: 10ch;
+    }
+
+    .subcopy {
+      margin: 0;
+      max-width: 60ch;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255, 253, 246, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 18px 50px rgba(30, 40, 35, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    .sample-box {
+      background: var(--accent-soft);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .sample-box pre {
+      margin: 12px 0 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.95rem;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    input, select, button {
+      font: inherit;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid rgba(14, 124, 102, 0.25);
+      border-color: var(--accent);
+    }
+
+    button {
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+      border: none;
+      font-weight: 700;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: white;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .metric strong {
+      font-size: 1.1rem;
+    }
+
+    .mix-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mix-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: white;
+    }
+
+    .error {
+      color: var(--warn);
+      margin-top: 10px;
+      min-height: 1.2rem;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    @media (max-width: 840px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">Backend Demo Flow</div>
+      <h1>Sustainable material recommendation starter</h1>
+      <p class="subcopy">
+        This is a simple hackathon-ready frontend talking to your FastAPI backend.
+        It uses hard-coded supplier data for now, so you can demo the full request →
+        optimize → response pipeline immediately.
+      </p>
+    </section>
+
+    <section class="layout">
+      <div class="card">
+        <h2>Project Input Form</h2>
+        <div class="sample-box">
+          <strong>Sample input to try</strong>
+          <pre id="sampleInput">Loading sample input...</pre>
+        </div>
+
+        <form id="optimizeForm">
+          <label>
+            Project Name
+            <input id="project_name" name="project_name" value="Metro Tower" required />
+          </label>
+
+          <label>
+            Material Type
+            <select id="material" name="material">
+              <option value="steel">Steel</option>
+              <option value="cement">Cement</option>
+              <option value="insulation">Insulation</option>
+            </select>
+          </label>
+
+          <label>
+            Quantity Required
+            <input id="quantity" name="quantity" type="number" min="1" value="100" required />
+          </label>
+
+          <label>
+            Budget
+            <input id="budget" name="budget" type="number" min="1" value="5000000" required />
+          </label>
+
+          <label>
+            Carbon Target
+            <input id="carbon_limit" name="carbon_limit" type="number" min="1" value="300" required />
+          </label>
+
+          <button type="submit">Run Optimization</button>
+        </form>
+
+        <p class="error" id="errorMessage"></p>
+      </div>
+
+      <div class="card">
+        <h2>Optimization Output</h2>
+        <p class="muted">The backend returns structured JSON and this page renders the result.</p>
+
+        <div class="result-grid">
+          <div class="metric">
+            <span>Recommended Supplier</span>
+            <strong id="recommendedSupplier">Waiting for input</strong>
+          </div>
+          <div class="metric">
+            <span>Optimized Cost</span>
+            <strong id="optimizedCost">-</strong>
+          </div>
+          <div class="metric">
+            <span>Optimized Carbon</span>
+            <strong id="optimizedCarbon">-</strong>
+          </div>
+          <div class="metric">
+            <span>Carbon Savings</span>
+            <strong id="carbonSavings">-</strong>
+          </div>
+        </div>
+
+        <h3>Supplier Mix</h3>
+        <div id="supplierMix" class="mix-list">
+          <div class="mix-item muted">Submit the form to see the supplier allocation.</div>
+        </div>
+
+        <h3>Recommendation</h3>
+        <p id="recommendationText" class="muted">No recommendation yet.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const sampleInputEl = document.getElementById("sampleInput");
+    const form = document.getElementById("optimizeForm");
+    const errorMessage = document.getElementById("errorMessage");
+
+    async function loadSampleInput() {
+      const response = await fetch("/api/sample-input");
+      const data = await response.json();
+      sampleInputEl.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function renderResult(data) {
+      document.getElementById("recommendedSupplier").textContent = data.recommended_supplier;
+      document.getElementById("optimizedCost").textContent = `Rs ${Number(data.optimized_cost).toLocaleString()}`;
+      document.getElementById("optimizedCarbon").textContent = `${data.optimized_carbon} tCO2e`;
+      document.getElementById("carbonSavings").textContent = `${data.carbon_savings_percent}%`;
+      document.getElementById("recommendationText").textContent = data.recommendation;
+
+      const mixHtml = data.supplier_mix.map((item) => `
+        <div class="mix-item">
+          <strong>${item.supplier}</strong><br />
+          ${item.units} units | Rs ${Number(item.total_cost).toLocaleString()} | ${item.total_carbon} tCO2e
+        </div>
+      `).join("");
+
+      document.getElementById("supplierMix").innerHTML = mixHtml;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorMessage.textContent = "";
+
+      const payload = {
+        project_name: document.getElementById("project_name").value,
+        material: document.getElementById("material").value,
+        quantity: Number(document.getElementById("quantity").value),
+        budget: Number(document.getElementById("budget").value),
+        carbon_limit: Number(document.getElementById("carbon_limit").value),
+      };
+
+      const response = await fetch("/api/optimize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        document.getElementById("supplierMix").innerHTML =
+          '<div class="mix-item muted">No supplier mix available.</div>';
+        document.getElementById("recommendationText").textContent = "No recommendation yet.";
+        errorMessage.textContent = data.detail || "Something went wrong.";
+        return;
+      }
+
+      renderResult(data);
+    });
+
+    loadSampleInput().catch(() => {
+      sampleInputEl.textContent = "Could not load sample input from the backend.";
+    });
+  </script>
+</body>
+</html>
